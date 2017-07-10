@@ -29,13 +29,14 @@ router.get('/', function(req, res) {
 });
 
 
+const wallet = new Wallet();
+
 /*
  * Create
  * Params - password: string
  * */
 
 router.route('/create').post(function(req, res) {
-    var wallet = new Wallet();
     var password = req.body.password;
 
     if(password) {

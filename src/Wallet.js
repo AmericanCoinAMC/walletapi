@@ -3,7 +3,7 @@
  */
 var ethereumjsWallet = require('ethereumjs-wallet');
 
-var Wallet = function (){
+function Wallet (){
 
 };
 
@@ -42,3 +42,6 @@ Wallet.prototype.generateWalletName = function () {
     }
     return 'amc_wallet_' + mm +'-'+ dd + '-' + yyyy + '.json';
 };
+
+// export the class
+module.exports = Wallet;
