@@ -42,7 +42,7 @@ router.route('/create').post(function(req, res) {
     if(password) {
         res.json(wallet.create(password));
     }else {
-        res.send(false);
+        res.send('here');
     }
 });
 
@@ -59,4 +59,4 @@ app.use('/api', router);
 // START THE SERVER
 // =============================================================================
 app.listen(port);
-console.log('Magic happens on port ' + port);
+console.log('Server Initialized on Port: ' + port);
