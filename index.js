@@ -9,7 +9,7 @@
 var express    = require('express');
 var app        = express();
 var bodyParser = require('body-parser');
-var Wallet = require('./src/Wallet');
+var Wallet = require('./src/Wallet.js');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
