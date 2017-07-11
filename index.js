@@ -43,7 +43,7 @@ const wallet = new Wallet();
 router.route('/create').post(function(req, res) {
     var password = req.query.password;
     if(password) {
-        res.json(wallet.create(password));
+        res.send(wallet.create(password));
     }else {
         res.send({});
     }
