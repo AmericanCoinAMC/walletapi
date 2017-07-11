@@ -43,5 +43,24 @@ Wallet.prototype.generateWalletName = function () {
     return 'amc_wallet_' + mm +'-'+ dd + '-' + yyyy + '.json';
 };
 
+
+Wallet.prototype.decryptWithFile = function (file, password){
+    const walletInstance = ethereumjsWallet.fromV3(file, password);
+    if(walletInstance) {
+        return({
+            privateKey: walletInstance.getPrivateKey(),
+            publicKey: walletInstance.getPublicKey(),
+            address: walletInstance.getAddress(),
+            privateKeyString: walletInstance.getPrivateKeyString(),
+            publicKeyString: walletInstance.getPublicKeyString(),
+            addressString: walletInstance.getAddressString(),
+            checksumAddress: walletInstance.getChecksumAddressString()
+        });
+    }else {
+        return false;
+    }
+};
+
+
 // export the class
 module.exports = Wallet;

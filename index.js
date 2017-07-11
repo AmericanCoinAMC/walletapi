@@ -49,8 +49,19 @@ router.route('/create').post(function(req, res) {
     }
 });
 
-
-
+/*
+ * Decrypt with File
+ * Params - password: string
+ * */
+router.route('/decryptWithFile').post(function(req, res) {
+    var file = req.query.file;
+    var password = req.query.password;
+    if(file && password) {
+        res.send(wallet.decryptWithFile(password));
+    }else {
+        res.send(false);
+    }
+});
 
 
 
