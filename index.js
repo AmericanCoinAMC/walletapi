@@ -49,9 +49,10 @@ router.route('/create').post(function(req, res) {
     }
 });
 
+
 /*
  * Decrypt with File
- * Params - password: string
+ * Params - password: string, file: tbd
  * */
 router.route('/decryptWithFile').post(function(req, res) {
     var file = req.query.file;
@@ -64,6 +65,18 @@ router.route('/decryptWithFile').post(function(req, res) {
 });
 
 
+/*
+ * Decrypt with Key
+ * Params - password: string
+ * */
+router.route('/decryptWithPrivateKey').post(function(req, res) {
+    var privateKey = req.query.privateKey;
+    if(privateKey) {
+        res.send(wallet.decryptWithPrivateKey(privateKey));
+    }else {
+        res.send(false);
+    }
+});
 
 
 // REGISTER OUR ROUTES -------------------------------

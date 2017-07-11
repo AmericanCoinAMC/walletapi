@@ -63,5 +63,35 @@ Wallet.prototype.decryptWithFile = function (file, password){
 };
 
 
+Wallet.prototype.decryptWithPrivateKey = function (privateKey){
+    const cleanPrivateKey = this.cleanPrefix(privateKey);
+    const privateKeyBuffer = Buffer.from(cleanPrivateKey, 'hex');
+    const walletInstance = ethereumjsWallet.fromPrivateKey(privateKeyBuffer);
+    if(walletInstance) {
+        return({
+            privateKey: walletInstance.getPrivateKey(),
+            publicKey: walletInstance.getPublicKey(),
+            address: walletInstance.getAddress(),
+            privateKeyString: walletInstance.getPrivateKeyString(),
+            publicKeyString: walletInstance.getPublicKeyString(),
+            addressString: walletInstance.getAddressString(),
+            checksumAddress: walletInstance.getChecksumAddressString()
+        });
+    }else {
+        return false;
+    }
+};
+
+
+
+
+Wallet.prototype.cleanPrefix = function(key) {
+    if(key[0] === '0' && key[1] === 'x'){
+        return key.substring(2);
+    }else{
+        return key;
+    }
+};
+
 // export the class
 module.exports = Wallet;
