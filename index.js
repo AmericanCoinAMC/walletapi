@@ -9,12 +9,16 @@
 var express    = require('express');
 var app        = express();
 var bodyParser = require('body-parser');
+var cors = require('cors');
 var Wallet = require('./src/Wallet.js');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+
+app.use(cors());
 
 var port = process.env.PORT || 8080;        // set our port
 
@@ -31,14 +35,13 @@ router.get('/', function(req, res) {
 
 const wallet = new Wallet();
 
+
 /*
  * Create
  * Params - password: string
  * */
-
 router.route('/create').post(function(req, res) {
     var password = req.query.password;
-
     if(password) {
         res.json(wallet.create(password));
     }else {
