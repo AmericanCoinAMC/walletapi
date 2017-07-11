@@ -45,7 +45,7 @@ router.route('/create').post(function(req, res) {
     if(password) {
         res.json(wallet.create(password));
     }else {
-        res.send('here');
+        res.send({});
     }
 });
 
