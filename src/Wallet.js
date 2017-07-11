@@ -45,7 +45,6 @@ Wallet.prototype.generateWalletName = function () {
 
 
 Wallet.prototype.decryptWithFile = function (file, password){
-    var parsedResult = decodeURI(file);
     parsedResult = JSON.parse(file);
     const walletInstance = ethereumjsWallet.fromV3(parsedResult, password);
     if(walletInstance) {

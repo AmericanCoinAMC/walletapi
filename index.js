@@ -58,7 +58,7 @@ router.route('/decryptWithFile').post(function(req, res) {
     var file = req.query.file;
     var password = req.query.password;
     if(file && password) {
-        res.send(wallet.decryptWithFile(password));
+        res.send(wallet.decryptWithFile(file, password));
     }else {
         res.send(false);
     }
