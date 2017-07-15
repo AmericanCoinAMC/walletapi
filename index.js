@@ -94,15 +94,6 @@ router.route('/decryptWithPrivateKey').post(function(req, res) {
     }
 });
 
-router.route('/decryptWithPrivateKey').post(function(req, res) {
-    var privateKey = req.query.privateKey;
-    if(privateKey) {
-        res.send(wallet.decryptWithPrivateKey(privateKey));
-    }else {
-        res.send(false);
-    }
-});
-
 
 
 
