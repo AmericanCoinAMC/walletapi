@@ -3,14 +3,20 @@
  */
 
 
-// BASE SETUP
-// =============================================================================
-
+/*
+* Server Related
+* */
 var express    = require('express');
 var app        = express();
 var bodyParser = require('body-parser');
 var cors = require('cors');
+
+/*
+* API dependencies
+* */
+var Web3 = require("web3");
 var Wallet = require('./src/Wallet.js');
+var TransactionListener = require('./src/TransactionListener.js');
 var Database = require('./src/Database.js');
 
 // configure app to use bodyParser()
