@@ -8,6 +8,8 @@
 * */
 var express    = require('express');
 var app        = express();
+var jwt = require('express-jwt');
+var jwks = require('jwks-rsa');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
@@ -25,7 +27,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
+// Allow CORS Requests
 app.use(cors());
+
+
+// Security
+var jwtCheck = jwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://amc.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'https://amcapi.herokuapp.com/api',
+    issuer: "https://amc.auth0.com/",
+    algorithms: ['RS256']
+});
+
+app.use(jwtCheck);
+
 
 var port = process.env.PORT || 8080;        // set our port
 
