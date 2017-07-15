@@ -11,6 +11,7 @@ var app        = express();
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var Wallet = require('./src/Wallet.js');
+var Database = require('./src/Database.js');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -27,13 +28,13 @@ var port = process.env.PORT || 8080;        // set our port
 var router = express.Router();              // get an instance of the express Router
 
 
+const database = new Database();
+const wallet = new Wallet();
+
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.get('/', function(req, res) {
     res.json({ message: "Welcome to AmericanCoin's Api" });
 });
-
-
-const wallet = new Wallet();
 
 
 /*
@@ -58,7 +59,14 @@ router.route('/decryptWithFile').post(function(req, res) {
     var file = req.query.file;
     var password = req.query.password;
     if(file && password) {
-        res.send(wallet.decryptWithFile(file, password));
+        var decrypt = wallet.decryptWithFile(file, password);
+        if (decrypt.then !== undefined) {
+            decrypt.then(function (walletData) {
+                res.send(walletData);
+            }).catch(function (err) { res.send(err) });
+        }else {
+            res.send(false);
+        }
     }else {
         res.send(false);
     }
@@ -69,6 +77,23 @@ router.route('/decryptWithFile').post(function(req, res) {
  * Decrypt with Key
  * Params - password: string
  * */
+
+router.route('/decryptWithPrivateKey').post(function(req, res) {
+    const privateKey = req.query.privateKey;
+    if(privateKey) {
+        var decrypt = wallet.decryptWithPrivateKey(privateKey);
+        if (decrypt.then !== undefined) {
+            decrypt.then(function (walletData) {
+                res.send(walletData);
+            }).catch(function (err) { res.send(err) });
+        }else {
+            res.send(false);
+        }
+    }else {
+        res.send(false);
+    }
+});
+
 router.route('/decryptWithPrivateKey').post(function(req, res) {
     var privateKey = req.query.privateKey;
     if(privateKey) {
@@ -79,11 +104,26 @@ router.route('/decryptWithPrivateKey').post(function(req, res) {
 });
 
 
-// REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
-app.use('/api', router);
 
-// START THE SERVER
-// =============================================================================
-app.listen(port);
-console.log('Server Initialized on Port: ' + port);
+
+/*
+* Initialize Database & App
+* */
+database.init()
+    .then(function (initialized){
+        if (initialized) {
+            // REGISTER OUR ROUTES
+            // all of our routes will be prefixed with /api
+            app.use('/api', router);
+
+            // START THE SERVER
+            app.listen(port);
+            console.log('Server Initialized on Port: ' + port);
+        }else {
+            return false;
+        }
+    })
+    .catch(function(err) {
+        console.log(err);
+    });
+
