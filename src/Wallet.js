@@ -3,7 +3,7 @@
  */
 const ethereumjsWallet = require('ethereumjs-wallet');
 const Tx = require('ethereumjs-tx');
-const Database = require('Database');
+const Database = require('./Database');
 const ABI = require("./Contract").abi;
 const contractAddress = require("./Contract").address; //Modify
 
