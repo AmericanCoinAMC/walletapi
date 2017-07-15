@@ -19,7 +19,7 @@ function Database() {
     this.password = 'Am$C.F.CO1n-';
 
     this.rootRef = null;
-}
+};
 
 
 Database.prototype.init = function () {
