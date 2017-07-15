@@ -30,7 +30,6 @@ Wallet.prototype.create = function(password) {
             addressString: generatedWallet.getAddressString(),
             checksumAddress: generatedWallet.getChecksumAddressString(),
             walletFileName: this.generateWalletName(),
-            //This shoudlnt be here, the object must not know anything about http protocol.
             walletFile: 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(walletFile))
         }
     }else {
