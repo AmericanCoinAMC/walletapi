@@ -95,6 +95,24 @@ router.route('/decryptWithPrivateKey').post(function(req, res) {
 });
 
 
+/*
+ * Get Address Data - For refreshing purposes
+ * Params - address: string
+ * */
+
+router.route('/getAddressData').post(function(req, res) {
+    const address = req.query.address;
+    if(address) {
+        wallet.getAddressData(address)
+            .then(function (addressData) {
+                res.send(addressData)
+            })
+            .catch(function (err) { res.send(false) })
+    }else {
+        res.send(false);
+    }
+});
+
 
 
 /*
