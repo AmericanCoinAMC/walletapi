@@ -23,7 +23,7 @@ function TransactionListener(web3Node) {
 
 }
 
-TransactionListener.prototype.listenToEvent=function(){
+TransactionListener.prototype.listenToEvent = function(){
     const self = this;
     this.event.watch(function(error, result){
         if (!error){
