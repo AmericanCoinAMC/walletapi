@@ -43,13 +43,32 @@ Database.prototype.init = function () {
 
 Database.prototype.processFanoutObject = function(fanoutObj) {
     const self = this;
-    self.rootRef = firebase.database().ref();
     return new Promise(function(resolve, reject) {
+        self.rootRef = firebase.database().ref();
         self.rootRef.update(fanoutObj)
             .then(function(response) {
                 resolve(response);
             }).catch(function(err){reject(err)});
     });
 };
+
+Database.prototype.TransactionConfirmed = function(participantRefs){
+    const self = this;
+    return new Promise(function (resolve, reject){
+    self.rootRef = firebase.database().ref();
+    self.rootRef.child(participantRefs[0])
+                .once('value')
+                .then(function(snapshot){
+                    if( snapshot.val()==null ){
+                        resolve(true);
+                    }
+                    else{
+                        reject(false);
+
+                    }
+                })
+    })
+}
+
 
 module.exports = Database;

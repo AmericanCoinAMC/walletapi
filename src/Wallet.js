@@ -246,11 +246,14 @@ Wallet.prototype.handleTransaction = function(from, to, amount, hash, status) {
     };
 
     return new Promise(function (resolve, reject){
-        self.db.processFanoutObject(fanoutObj)
-            .then(function(response){
-                resolve(true)
-            })
-            .catch(function (err) { reject(err) })
+        self.db.TransactionConfirmed(participantRefs).then(function(notConfirmed){
+            self.db.processFanoutObject(fanoutObj)
+                .then(function(response){
+                    resolve(true);
+                })
+                .catch(function (err) { reject(err) })
+        }).catch(function (confirmed) { resolve(true) })
+
     });
 };
 
