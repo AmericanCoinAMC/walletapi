@@ -25,11 +25,11 @@ function Database() {
 Database.prototype.init = function () {
     const self = this;
     return new Promise(function (resolve, reject){
-        firebase.initializeApp(this.config);
+        firebase.initializeApp(self.config);
         self.rootRef = firebase.database().ref();
         // Authenticate API
         firebase.auth()
-            .signInWithEmailAndPassword(this.email, this.password)
+            .signInWithEmailAndPassword(self.email, self.password)
             .then(function (response) {
                 resolve(true);
             })

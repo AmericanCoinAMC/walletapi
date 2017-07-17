@@ -20,6 +20,7 @@ var Web3 = require("web3");
 var Wallet = require('./src/Wallet.js');
 var TransactionListener = require('./src/TransactionListener.js');
 var Database = require('./src/Database.js');
+//var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8080"));
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -55,7 +56,11 @@ var router = express.Router();              // get an instance of the express Ro
 
 
 const database = new Database();
-const wallet = new Wallet();
+//const wallet = new Wallet(web3);
+
+
+//console.log( wallet.getBalance("0x4AD40c0660f467C94cfA314Bae24c15DAeBd02EB") );
+
 
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.get('/', function(req, res) {

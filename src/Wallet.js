@@ -237,7 +237,7 @@ Wallet.prototype.handleTransaction = function(from, to, amount, hash, status) {
         status: status
     };
 
-    fanoutObj[participantRefs[0]] = {
+    fanoutObj[participantRefs[1]] = {
         type: 'received',
         from: from,
         to: to,
