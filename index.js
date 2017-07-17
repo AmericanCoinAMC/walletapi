@@ -8,8 +8,6 @@
 * */
 var express    = require('express');
 var app        = express();
-var jwt = require('express-jwt');
-var jwks = require('jwks-rsa');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
@@ -20,8 +18,7 @@ var Web3 = require("web3");
 var Wallet = require('./src/Wallet.js');
 var TransactionListener = require('./src/TransactionListener.js');
 var Database = require('./src/Database.js');
-const ETH_NODE = "http://localhost:8080";
-var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
+
 
 
 // configure app to use bodyParser()
@@ -34,21 +31,12 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-// Security
-var jwtCheck = jwt({
-    secret: jwks.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: "https://amc.auth0.com/.well-known/jwks.json"
-    }),
-    audience: 'https://amcapi.herokuapp.com/api',
-    issuer: "https://amc.auth0.com/",
-    algorithms: ['RS256']
-});
+/*
+* Properties Initializer
+* */
 
-app.use(jwtCheck);
-
+const ETH_NODE = "http://localhost:8080";
+var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
 
 var port = process.env.PORT || 8080;        // set our port
 
@@ -62,7 +50,7 @@ const wallet = new Wallet(web3);
 // const transactionListener = new TransactionListener(web3);
 
 
-// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
+// test route to make sure everything is working
 router.get('/', function(req, res) {
     res.json({ message: "Welcome to AmericanCoin's Api" });
 });
@@ -159,12 +147,7 @@ database.init()
             // START THE SERVER
             app.listen(port);
 
-            console.log('initialized');
-            /*console.log('Server Initialized on Port: ' + port);
-            console.log( wallet.getBalance("0x4AD40c0660f467C94cfA314Bae24c15DAeBd02EB") );
-            var privateKey = new Buffer('25c5aed1ffaf6572c6ead5f61164a798a63145b380acff0e8644f9f74c691e52', 'hex');
-            wallet.sendTransaction("0x4AD40c0660f467C94cfA314Bae24c15DAeBd02EB","0xF77E9a8906Dd09FECD356A5405A871ba1262a865",55,300000,privateKey);
-            transactionListener.listenToEvent();  */
+            console.log('Initialized');
         }else {
             return false;
         }
