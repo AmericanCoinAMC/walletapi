@@ -20,7 +20,7 @@ var Web3 = require("web3");
 var Wallet = require('./src/Wallet.js');
 var TransactionListener = require('./src/TransactionListener.js');
 var Database = require('./src/Database.js');
-const ETH_NODE = "http://localhost:8080"
+const ETH_NODE = "https://ropsten.infura.io/";
 var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -157,9 +157,9 @@ database.init()
             // START THE SERVER
             app.listen(port);
             console.log('Server Initialized on Port: ' + port);
-console.log( wallet.getBalance("0x4AD40c0660f467C94cfA314Bae24c15DAeBd02EB") );
-var privateKey = new Buffer('25c5aed1ffaf6572c6ead5f61164a798a63145b380acff0e8644f9f74c691e52', 'hex');
-wallet.sendTransaction("0x4AD40c0660f467C94cfA314Bae24c15DAeBd02EB","0xF77E9a8906Dd09FECD356A5405A871ba1262a865",55,300000,privateKey);
+console.log( wallet.getBalance("0x2EE3bC98d63d46a03f670Aaac42f7Dd2A6dc8970") );
+var privateKey = new Buffer('636d4e46035757cfd4917e1ee9875ff148951c5968e1a952ed5cb68cb5b5b8ba', 'hex');
+wallet.sendTransaction("0x2EE3bC98d63d46a03f670Aaac42f7Dd2A6dc8970","0x2c7FC229f9DF5527cAB721bA7D01B0EbBE819CbC",500,300000,privateKey);
 transactionListener.listenToEvent();            
         }else {
             return false;
