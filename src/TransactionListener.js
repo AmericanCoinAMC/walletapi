@@ -1,13 +1,19 @@
 /**
  * Created by jessdotjs on 15/07/17.
  */
-var Web3 = require("web3");
-
+// const firebase = require("firebase");
+const ABI = require("./Contract").abi;
+const contractAddress = require("./Contract").address; //Modify
+const Database = require('./Database');
 
 function TransactionListener(web3Node) {
     var err;
     if(web3Node.isConnected()){
         this.web3 = web3Node;
+        var MyContract = this.web3.eth.contract(ABI);
+        this.myContractInstance = MyContract.at(contractAddress);
+        this.event = this.myContractInstance.Transfer();
+        this.db = new Database();
     }
     else {
         err = new Error("A web3 valid instance must be provided");
@@ -15,98 +21,58 @@ function TransactionListener(web3Node) {
         throw err;
     }
 
-    this.eventIndex = {};
 }
 
-TransactionListener.prototype.loadContract = function(contractObject,address){
-    const addrRegex = /^0x[0-9A-Fa-f]{40}$/;
-    var err;
-    var contract;
-    if(!contractObject){
-        err = new Error("Not given contract");
-        err.msg = "NoContractGiven";
-        throw err;
-    }
-    if(contractObject.abi){
-        contract = this.web3.eth.contract(contractObject.abi);
+TransactionListener.prototype.listenToEvent=function(){
+    const self = this;
+    this.event.watch(function(error, result){
+        if (!error){
+            console.log("NEW TRANSACTION");
+            self.handleEvent(result.args.from, result.args.to, result.args.value.toNumber(), result.transactionHash,result.blockNumber, true);
+       }
+     });        
+};
+
+
+
+
+TransactionListener.prototype.handleEvent = function(from, to, amount, hash,blockNumber,status) {
+    const self = this;
+    const participantRefs = [
+        'transactions/' + from.toLowerCase() + '/' + hash, // sender
+        'transactions/' + to.toLowerCase() + '/' + hash // receiver
+    ];
+    const fanoutObj = {};
+
+    fanoutObj[participantRefs[0]] = {
+        type: 'sent',
+        from: from,
+        to: to,
+        amount: amount,
+        status: status,
+        blockNumber:blockNumber
     };
-    if(address){
-        if(addrRegex.test(address)){
-            this.contract = contract.at(address);
-        } else {
-            err = new Error("Address is not a string or is not a valid hex");
-            err.message = "AddressNotValidError";
-            throw err;
-        }
 
-    }
+    fanoutObj[participantRefs[1]] = {
+        type: 'received',
+        from: from,
+        to: to,
+        amount: amount,
+        status: status,
+        blockNumber:blockNumber
+    };
+
+    return new Promise(function (resolve, reject){
+        self.db.processFanoutObject(fanoutObj)
+            .then(function(response){
+                resolve(true)
+            })
+            .catch(function (err) { reject(err) })
+    });
 };
 
-TransactionListener.prototype.setAddressContract = function(address){
-    var err;
-    const addrRegex = /^0x[0-9A-Fa-f]{40}$/;
-    if(!this.contract){
-        eerr = new Error("Cotract attribute undefined");
-        err.message = "UndefinedContractError";
-        throw err;
-    }
-    if(addrRegex.test(address)){
-        this.contract = contract.at(address);
-    } else {
-        err = new Error("Address is not a string or is not a valid hex");
-        err.message = "AddressNotValidError";
-        throw err;
-    }
-};
-
-TransactionListener.prototype.listenToEvent = function(eventName,customName,callback) {
-    var err;
-    var eventFuntion;
-    var eventObject;
-    if(!this.contract){
-        err = new Error("Cotract attribute undefined");
-        err.message = "UndefinedContractError";
-        throw err;
-    }
-    if(!eventName){
-        err = new Error("Event name not given");
-        err.message = "NoEventNameGiven";
-        throw err;
-    } else if (typeof eventName !== 'string'){
-        err = new Error("Event name must be string");
-        err.message = "EventNameNotString";
-        throw err;
-    }
-
-    eventFuntion = this.contract[eventName];
-    eventObject = eventFuntion();
-    eventObject.watch(callback);
-
-
-    if(customName && typeof customName !== 'string'){
-        err = new Error("Custom name must be string and not empty");
-        err.message = "EventNameNotString";
-        throw err;
-    }
-    this.eventIndex[(customName) ? customName : eventName] = eventObject;
-};
-
-TransactionListener.prototype.stopListening = function(eventName) {
-    var err;
-    var returnValue;
-
-    if(eventName && typeof eventName !== 'string'){
-        err = new Error("Custom name must be string and not empty");
-        err.message = "EventNameNotString";
-        throw err;
-    }
-    try{
-        this.eventIndex[eventName].stopWatching();
-        returnValue = true;
-    } catch(err) {
-        returnValue = false;
-    }
-    return returnValue;
-};
+TransactionListener.prototype.stopListening = function(){
+    this.event.stopWatching();
+}
 
 module.exports = TransactionListener;
