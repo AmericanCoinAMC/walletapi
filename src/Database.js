@@ -19,6 +19,7 @@ function Database() {
     this.password = 'Am$C.F.CO1n-';
 
     this.rootRef = null;
+    
 };
 
 
@@ -42,6 +43,7 @@ Database.prototype.init = function () {
 
 Database.prototype.processFanoutObject = function(fanoutObj) {
     const self = this;
+    self.rootRef = firebase.database().ref();
     return new Promise(function(resolve, reject) {
         self.rootRef.update(fanoutObj)
             .then(function(response) {
