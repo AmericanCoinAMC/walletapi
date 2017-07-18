@@ -1,7 +1,6 @@
 /**
  * Created by jessdotjs on 15/07/17.
  */
-// const firebase = require("firebase");
 const ABI = require("./Contract").abi;
 const contractAddress = require("./Contract").address; //Modify
 const Database = require('./Database');
@@ -27,7 +26,7 @@ TransactionListener.prototype.listenToEvent = function(){
     const self = this;
     this.event.watch(function(error, result){
         if (!error){
-            console.log("NEW TRANSACTION");
+            //console.log("NEW TRANSACTION");
             self.handleEvent(result.args.from, result.args.to, result.args.value.toNumber(), result.transactionHash,result.blockNumber, true);
        }
      });        

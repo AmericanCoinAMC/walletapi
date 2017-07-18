@@ -4,23 +4,24 @@
 
 
 /*
-* Server Related
-* */
+ * Server Related
+ * */
 var express    = require('express');
 var app        = express();
+var jwt = require('express-jwt');
+var jwks = require('jwks-rsa');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
 /*
-* API dependencies
-* */
+ * API dependencies
+ * */
 var Web3 = require("web3");
 var Wallet = require('./src/Wallet.js');
 var TransactionListener = require('./src/TransactionListener.js');
 var Database = require('./src/Database.js');
-
-
-
+const ETH_NODE = ""; //NODE URL
+var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,12 +32,21 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-/*
-* Properties Initializer
-* */
+// Security
+var jwtCheck = jwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://amc.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'https://amcapi.herokuapp.com/api',
+    issuer: "https://amc.auth0.com/",
+    algorithms: ['RS256']
+});
 
-const ETH_NODE = "http://localhost:8080";
-var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
+app.use(jwtCheck);
+
 
 var port = process.env.PORT || 8080;        // set our port
 
@@ -47,10 +57,10 @@ var router = express.Router();              // get an instance of the express Ro
 
 const database = new Database();
 const wallet = new Wallet(web3);
-// const transactionListener = new TransactionListener(web3);
+const transactionListener = new TransactionListener(web3);
 
 
-// test route to make sure everything is working
+// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.get('/', function(req, res) {
     res.json({ message: "Welcome to AmericanCoin's Api" });
 });
@@ -134,9 +144,11 @@ router.route('/getAddressData').post(function(req, res) {
 
 
 
+transactionListener.listenToEvent(); //Transaction Listener
 /*
-* Initialize Database & App
-* */
+ * Initialize Database & App
+ * */
+
 database.init()
     .then(function (initialized){
         if (initialized) {
@@ -146,8 +158,8 @@ database.init()
 
             // START THE SERVER
             app.listen(port);
+            console.log('Server Initialized on Port: ' + port);
 
-            console.log('Initialized');
         }else {
             return false;
         }
@@ -155,5 +167,4 @@ database.init()
     .catch(function(err) {
         console.log(err);
     });
-
 
