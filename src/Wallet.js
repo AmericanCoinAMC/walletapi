@@ -131,7 +131,7 @@ Wallet.prototype.getAddressData = function (address) {
 };
 
 Wallet.prototype.getBalance = function (address) {
-    return this.myContractInstance.balanceOf(address).toNumber();
+    return this.formatBalance( this.myContractInstance.balanceOf(address).toNumber() );
 };
 
 Wallet.prototype.getEthereumBalance = function (address) { //Ethereum balance
@@ -182,7 +182,7 @@ Wallet.prototype.sendTransaction = function(fromAddress, toAddress, amount, gasL
         const nonceHex = self.web3.toHex(self.web3.eth.getTransactionCount(fromAddress));
         const gasPriceHex = self.web3.toHex(self.web3.eth.gasPrice);
         const gasLimitHex = self.web3.toHex(gasLimit);
-        const payloadData = self.myContractInstance.transfer.getData(toAddress,amount);
+        const payloadData = self.myContractInstance.transfer.getData(toAddress,self.formatAmount(amount));
         const privateKey = PrivateKey; //Buffer
         const rawTx = {
             nonce: nonceHex,
@@ -215,6 +215,14 @@ Wallet.prototype.sendTransaction = function(fromAddress, toAddress, amount, gasL
         });
     });
 };
+
+Wallet.prototype.formatAmount=function(amount){
+    return amount*Math.pow(10,8);
+}
+
+Wallet.prototype.formatBalance=function(balance){
+    return balance*Math.pow(10,-8);
+}
 
 
 Wallet.prototype.handleTransaction = function(from, to, amount, hash, status) {

@@ -32,6 +32,10 @@ TransactionListener.prototype.listenToEvent = function(){
      });        
 };
 
+TransactionListener.prototype.formatAmount=function(amount){
+    return amount*Math.pow(10,-8);
+}
+
 
 
 
@@ -47,7 +51,7 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash,bloc
         type: 'sent',
         from: from,
         to: to,
-        amount: amount,
+        amount: self.formatAmount(amount),
         status: status,
         blockNumber:blockNumber
     };
@@ -56,7 +60,7 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash,bloc
         type: 'received',
         from: from,
         to: to,
-        amount: amount,
+        amount: self.formatAmount(amount),
         status: status,
         blockNumber:blockNumber
     };

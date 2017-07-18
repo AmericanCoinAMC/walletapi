@@ -66,7 +66,7 @@ Database.prototype.TransactionConfirmed = function(participantRefs){
         firebase.database().ref().child(participantRefs[0])
                 .once('value')
                 .then(function(snapshot){
-                    if( snapshot.exists() ){
+                    if( !snapshot.exists() ){
                         resolve(true);
                     }
                     else{ reject(false) }
