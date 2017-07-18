@@ -8,8 +8,6 @@
  * */
 var express    = require('express');
 var app        = express();
-var jwt = require('express-jwt');
-var jwks = require('jwks-rsa');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
@@ -20,8 +18,9 @@ var Web3 = require("web3");
 var Wallet = require('./src/Wallet.js');
 var TransactionListener = require('./src/TransactionListener.js');
 var Database = require('./src/Database.js');
-const ETH_NODE = ""; //NODE URL
-var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
+
+
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,21 +31,14 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-// Security
-var jwtCheck = jwt({
-    secret: jwks.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: "https://amc.auth0.com/.well-known/jwks.json"
-    }),
-    audience: 'https://amcapi.herokuapp.com/api',
-    issuer: "https://amc.auth0.com/",
-    algorithms: ['RS256']
-});
 
-app.use(jwtCheck);
+/*
+* Properties Init
+* */
 
+
+const ETH_NODE = "http://162.243.56.234:8000"; //NODE URL
+var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
 
 var port = process.env.PORT || 8080;        // set our port
 
@@ -144,7 +136,7 @@ router.route('/getAddressData').post(function(req, res) {
 
 
 
-transactionListener.listenToEvent(); //Transaction Listener
+
 /*
  * Initialize Database & App
  * */
@@ -152,11 +144,13 @@ transactionListener.listenToEvent(); //Transaction Listener
 database.init()
     .then(function (initialized){
         if (initialized) {
-            // REGISTER OUR ROUTES
-            // all of our routes will be prefixed with /api
+            // Initialize contract event listener
+            transactionListener.listenToEvent(); //Transaction Listener
+
+            // Register routes and add api prefix
             app.use('/api', router);
 
-            // START THE SERVER
+            // Start the server
             app.listen(port);
             console.log('Server Initialized on Port: ' + port);
 

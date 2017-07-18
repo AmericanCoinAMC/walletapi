@@ -122,10 +122,7 @@ Wallet.prototype.getAddressData = function (address) {
         self.getTransactions(address)
             .then(function (txs) {
                 resolve({
-                    balance: {
-                        amc: self.getBalance(address),
-                        eth: self.getEthereumBalance(address)
-                    },
+                    balance: self.getBalance(address),
                     transactions: txs
                 });
             })

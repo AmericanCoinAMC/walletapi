@@ -59,16 +59,13 @@ Database.prototype.TransactionConfirmed = function(participantRefs){
     self.rootRef.child(participantRefs[0])
                 .once('value')
                 .then(function(snapshot){
-                    if( snapshot.val()==null ){
+                    if( snapshot.exists() ){
                         resolve(true);
                     }
-                    else{
-                        reject(false);
-
-                    }
+                    else{ reject(false) }
                 })
     })
-}
+};
 
 
 module.exports = Database;
