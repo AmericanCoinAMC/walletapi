@@ -144,8 +144,7 @@ Wallet.prototype.getTransactions = function (address) {
     const self = this;
 
     return new Promise(function (resolve, reject) {
-        self.rootRef.child('transactions/' + address)
-            .once('value')
+        self.db.getTransactions(address)
             .then(function(snapshot){
                 resolve(self.formatTransactions(snapshot));
             }).catch(function (err) {reject(err);})

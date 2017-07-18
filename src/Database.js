@@ -17,17 +17,13 @@ function Database() {
 
     this.email = 'americancoin.amc@gmail.com';
     this.password = 'Am$C.F.CO1n-';
-
-    this.rootRef = null;
-    
-};
+}
 
 
 Database.prototype.init = function () {
     const self = this;
+    firebase.initializeApp(this.config);
     return new Promise(function (resolve, reject){
-        firebase.initializeApp(self.config);
-        self.rootRef = firebase.database().ref();
         // Authenticate API
         firebase.auth()
             .signInWithEmailAndPassword(self.email, self.password)
@@ -52,11 +48,22 @@ Database.prototype.processFanoutObject = function(fanoutObj) {
     });
 };
 
+Database.prototype.getTransactions = function (address) {
+    const self = this;
+
+    return new Promise(function (resolve, reject) {
+        firebase.database().ref().child('transactions/' + address)
+            .once('value')
+            .then(function(snapshot){
+                resolve(snapshot);
+            }).catch(function (err) {reject(err);})
+    });
+};
+
 Database.prototype.TransactionConfirmed = function(participantRefs){
     const self = this;
     return new Promise(function (resolve, reject){
-    self.rootRef = firebase.database().ref();
-    self.rootRef.child(participantRefs[0])
+        firebase.database().ref().child(participantRefs[0])
                 .once('value')
                 .then(function(snapshot){
                     if( snapshot.exists() ){

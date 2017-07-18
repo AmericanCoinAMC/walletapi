@@ -116,6 +116,9 @@ router.route('/decryptWithPrivateKey').post(function(req, res) {
 });
 
 
+
+
+
 /*
  * Get Address Data - For refreshing purposes
  * Params - address: string
@@ -153,7 +156,6 @@ database.init()
             // Start the server
             app.listen(port);
             console.log('Server Initialized on Port: ' + port);
-
         }else {
             return false;
         }
