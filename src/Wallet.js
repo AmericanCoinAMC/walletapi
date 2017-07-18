@@ -197,22 +197,29 @@ Wallet.prototype.sendTransaction = function(fromAddress, toAddress, amount, gasL
         const tx = new Tx(rawTx);
         tx.sign(privateKey); //Sign transaction
         const serializedTx = '0x'+ tx.serialize().toString('hex');
+        if(amount<self.getBalance(fromAddress)){
+            reject(false);
+        }
+        else{
+            
+            self.web3.eth.sendRawTransaction(serializedTx, function(err, hash){
+                if(!err){
 
-        self.web3.eth.sendRawTransaction(serializedTx, function(err, hash){
-
-            /*
-            * I dont think this should be here.
-            *
-            * This function should be called by the Event listener when
-            * 0 confirmations -> status = false
-            * 1 confirmation -> status = true
-            * */
-            self.handleTransaction(fromAddress, toAddress, amount, hash, false)
-                .then(function() {
-                    resolve(true)
-                })
-                .catch(function (err) {reject(err)})
-        });
+                /*
+                * I dont think this should be here.
+                *
+                * This function should be called by the Event listener when
+                * 0 confirmations -> status = false
+                * 1 confirmation -> status = true
+                * */
+                    self.handleTransaction(fromAddress, toAddress, amount, hash, false)
+                        .then(function() {
+                            resolve(true)
+                        })
+                        .catch(function (err) {reject(err)})
+                }else{ reject(err) }
+            });
+        }
     });
 };
 
