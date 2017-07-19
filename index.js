@@ -156,7 +156,7 @@ database.init()
             // Start the server
             app.listen(port);
             console.log('Server Initialized on Port: ' + port);
-  
+
         }else {
             return false;
         }

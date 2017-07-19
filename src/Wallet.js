@@ -192,12 +192,11 @@ Wallet.prototype.sendTransaction = function(fromAddress, toAddress, amount, gasL
             value: '0x00',
             data: payloadData
         };
-
         // Generate tx
         const tx = new Tx(rawTx);
         tx.sign(privateKey); //Sign transaction
         const serializedTx = '0x'+ tx.serialize().toString('hex');
-        if(amount<self.getBalance(fromAddress)){
+        if(amount>self.getBalance(fromAddress) || self.formatAmount(amount)<1){
             reject(false);
         }
         else{
