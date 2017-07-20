@@ -138,6 +138,15 @@ router.route('/getAddressData').post(function(req, res) {
 });
 
 
+router.route('/getEstimatedFee').post(function(req,res){
+    var address = req.query.address;
+    var amount = req.query.amount;
+    if(address && amount){
+        var EstimateFee = wallet.estimateFee(address,amount);
+        res.send({estimateFee:EstimateFee});
+    }
+})
+
 
 
 /*

@@ -139,6 +139,17 @@ Wallet.prototype.getEthereumBalance = function (address) { //Ethereum balance
     return this.web3.fromWei(balance.toNumber(),"ether");
 };
 
+Wallet.prototype.estimateFee = function(toAddress,amount){
+    var estimateGas = this.web3.eth.estimateGas({
+            to: contractAddress, 
+            data: this.myContractInstance.transfer.getData(toAddress,this.formatAmount(amount))
+        });
+    var gasPrice =this.web3.fromWei(this.web3.eth.gasPrice.toNumber(),"ether"); 
+    var estimateFee = estimateGas*gasPrice;
+    return estimateFee;
+
+};
+
 
 Wallet.prototype.getTransactions = function (address) {
     const self = this;
