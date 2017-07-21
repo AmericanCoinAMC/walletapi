@@ -139,6 +139,17 @@ Wallet.prototype.getEthereumBalance = function (address) { //Ethereum balance
     return this.web3.fromWei(balance.toNumber(),"ether");
 };
 
+Wallet.prototype.estimateFee = function(toAddress,amount){
+    var estimateGas = this.web3.eth.estimateGas({
+        to: contractAddress,
+        data: this.myContractInstance.transfer.getData(toAddress,this.formatAmount(amount))
+    });
+    var gasPrice =this.web3.fromWei(this.web3.eth.gasPrice.toNumber(),"ether");
+    var estimateFee = estimateGas*gasPrice;
+    return estimateFee;
+
+};
+
 
 Wallet.prototype.getTransactions = function (address) {
     const self = this;
@@ -200,17 +211,17 @@ Wallet.prototype.sendTransaction = function(fromAddress, toAddress, amount, gasL
             reject(false);
         }
         else{
-            
+
             self.web3.eth.sendRawTransaction(serializedTx, function(err, hash){
                 if(!err){
 
-                /*
-                * I dont think this should be here.
-                *
-                * This function should be called by the Event listener when
-                * 0 confirmations -> status = false
-                * 1 confirmation -> status = true
-                * */
+                    /*
+                    * I dont think this should be here.
+                    *
+                    * This function should be called by the Event listener when
+                    * 0 confirmations -> status = false
+                    * 1 confirmation -> status = true
+                    * */
                     self.handleTransaction(fromAddress, toAddress, amount, hash, false)
                         .then(function() {
                             resolve(true)
