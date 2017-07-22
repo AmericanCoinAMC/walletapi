@@ -39,16 +39,21 @@ Schema.prototype.decryptedWallet = function(walletInstance, addressData, general
 
 
 Schema.prototype.transaction = function(type, from, to, amount, description, txTS, blockNumber, status) {
+    var currentTS = new Date().getTime();
+    var negativeTS = -(currentTS);
     return {
         type: type,
         from: from,
         to: to,
         amount: amount,
         description: description || null,
-        txTS: txTS || new Date().getTime(),
+        txTS: txTS || currentTS,
         blockNumber: blockNumber,
-        status: status
+        status: status,
+        '.priority': -(txTS) || negativeTS
     };
 };
+
+
 
 module.exports = Schema;

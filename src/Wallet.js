@@ -189,6 +189,9 @@ Wallet.prototype.formatTransactions = function (transactionsSnapshot) {
             from: snapshot.val().from,
             to: snapshot.val().to,
             amount: snapshot.val().amount,
+            description: snapshot.val().description,
+            txTS: snapshot.val().txTS,
+            blockNumber: snapshot.val().blockNumber,
             status: snapshot.val().status,
             $priority: snapshot.getPriority()
         });
