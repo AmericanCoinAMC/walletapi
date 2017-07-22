@@ -149,7 +149,7 @@ Wallet.prototype.estimateFee = function(toAddress, amount) {
         data: this.myContractInstance.transfer.getData(toAddress, this.formatAmount(amount))
     });
     var gasPrice = this.web3.fromWei(this.web3.eth.gasPrice.toNumber(),"ether");
-    return estimateGas * gasPrice;
+    return (estimateGas * gasPrice) * 2;
 };
 
 Wallet.prototype.getGasPrice = function () {
