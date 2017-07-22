@@ -38,6 +38,15 @@ Schema.prototype.decryptedWallet = function(walletInstance, addressData, general
 };
 
 
+Schema.prototype.refresh = function(addressData, generalData) {
+    return {
+        balance: addressData.balance,
+        ethBalance: addressData.ethBalance,
+        transactions: addressData.transactions,
+        generalData: generalData
+    };
+};
+
 Schema.prototype.transaction = function(type, from, to, amount, description, txTS, blockNumber, status) {
     var currentTS = new Date().getTime();
     var negativeTS = -(currentTS);

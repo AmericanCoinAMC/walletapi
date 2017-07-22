@@ -123,6 +123,17 @@ Wallet.prototype.getGeneralData = function () {
     };
 };
 
+Wallet.prototype.getRefreshData = function (address) {
+    var self = this;
+    return new Promise(function (resolve, reject){
+        self.getAddressData(address)
+            .then(function(addressData) {
+                resolve(self.schema.refresh(addressData, self.getGeneralData()));
+            })
+            .catch(function (err) { reject(err); });
+    });
+};
+
 Wallet.prototype.getBalance = function (address) {
     return this.formatBalance( this.myContractInstance.balanceOf(address).toNumber() );
 };

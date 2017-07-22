@@ -148,10 +148,10 @@ router.route('/send').post(function(req, res) {
  * Params - address: string
  * */
 
-router.route('/getAddressData').post(function(req, res) {
+router.route('/getRefreshData').post(function(req, res) {
     var address = req.query.address;
     if(address) {
-        wallet.getAddressData(address)
+        wallet.getRefreshData(address)
             .then(function (addressData) {
                 res.send(addressData);
             })
