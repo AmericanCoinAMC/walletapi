@@ -11,8 +11,8 @@ var Schema = require('./Schema');
 var ABI = require("./Contract").abi;
 var contractAddress = require("./Contract").address; //Modify
 
-function Wallet (web3Node){
-    if(web3Node.isConnected()){
+function Wallet (web3Node) {
+    if(web3Node.isConnected()) {
         this.web3 = web3Node;
         var MyContract = this.web3.eth.contract(ABI);
         this.myContractInstance = MyContract.at(contractAddress);
