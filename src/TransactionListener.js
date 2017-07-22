@@ -1,9 +1,13 @@
 /**
  * Created by jessdotjs on 15/07/17.
  */
-const ABI = require("./Contract").abi;
-const contractAddress = require("./Contract").address; //Modify
-const Database = require('./Database');
+
+"use strict";
+
+var ABI = require("./Contract").abi;
+var contractAddress = require("./Contract").address; //Modify
+var Database = require('./Database');
+var Schema = require('./Schema');
 
 function TransactionListener(web3Node) {
     var err;
@@ -13,6 +17,7 @@ function TransactionListener(web3Node) {
         this.myContractInstance = MyContract.at(contractAddress);
         this.event = this.myContractInstance.Transfer();
         this.db = new Database();
+        this.schema = new Schema();
     }
     else {
         err = new Error("A web3 valid instance must be provided");
@@ -23,59 +28,50 @@ function TransactionListener(web3Node) {
 }
 
 TransactionListener.prototype.listenToEvent = function(){
-    const self = this;
+    var self = this;
     this.event.watch(function(error, result){
         if (!error){
-            //console.log("NEW TRANSACTION");
-            self.handleEvent(result.args.from, result.args.to, result.args.value.toNumber(), result.transactionHash,result.blockNumber, true);
+            self.handleEvent(result.args.from, result.args.to, result.args.value.toNumber(), result.transactionHash, result.blockNumber, true);
        }
      });        
 };
 
-TransactionListener.prototype.formatAmount=function(amount){
-    return amount*Math.pow(10,-8);
-}
+TransactionListener.prototype.formatAmount = function(amount){
+    return amount * Math.pow(10, -8);
+};
 
 
 
 
-TransactionListener.prototype.handleEvent = function(from, to, amount, hash,blockNumber,status) {
-    const self = this;
-    const participantRefs = [
+TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blockNumber, status) {
+    var self = this;
+    var participantRefs = [
         'transactions/' + from.toLowerCase() + '/' + hash, // sender
         'transactions/' + to.toLowerCase() + '/' + hash // receiver
     ];
-    const fanoutObj = {};
-
-    fanoutObj[participantRefs[0]] = {
-        type: 'sent',
-        from: from,
-        to: to,
-        amount: self.formatAmount(amount),
-        status: status,
-        blockNumber:blockNumber
-    };
-
-    fanoutObj[participantRefs[1]] = {
-        type: 'received',
-        from: from,
-        to: to,
-        amount: self.formatAmount(amount),
-        status: status,
-        blockNumber:blockNumber
-    };
+    var fanoutObj = {};
 
     return new Promise(function (resolve, reject){
-        self.db.processFanoutObject(fanoutObj)
-            .then(function(response){
-                resolve(true)
+        self.db.getTransactionData(from, hash)
+            .then(function (snapshot) {
+                fanoutObj[participantRefs[0]] = // Sender
+                    this.schema.transaction('sent', from, to, amount, snapshot.val().description,  snapshot.val().txTS, hash, blockNumber, status);
+
+                fanoutObj[participantRefs[1]] = // Receiver
+                    this.schema.transaction('received', from, to, amount, snapshot.val().description, snapshot.val().txTS, hash, blockNumber, status);
+
+                self.db.processFanoutObject(fanoutObj)
+                    .then(function(response){
+                        resolve(true);
+                    })
+                    .catch(function (err) { reject(err); });
             })
-            .catch(function (err) { reject(err) })
+            .catch(function (err) { reject(err); });
     });
 };
 
 TransactionListener.prototype.stopListening = function(){
     this.event.stopWatching();
-}
+};
 
 module.exports = TransactionListener;

@@ -1,9 +1,9 @@
 /**
  * Created by jessdotjs on 15/07/17.
  */
+"use strict";
 
-
-const firebase = require("firebase");
+var firebase = require("firebase");
 
 function Database() {
     this.config = {
@@ -21,7 +21,7 @@ function Database() {
 
 
 Database.prototype.init = function () {
-    const self = this;
+    var self = this;
     firebase.initializeApp(this.config);
     return new Promise(function (resolve, reject){
         // Authenticate API
@@ -38,40 +38,52 @@ Database.prototype.init = function () {
 
 
 Database.prototype.processFanoutObject = function(fanoutObj) {
-    const self = this;
+    var self = this;
     return new Promise(function(resolve, reject) {
         self.rootRef = firebase.database().ref();
         self.rootRef.update(fanoutObj)
             .then(function(response) {
                 resolve(response);
-            }).catch(function(err){reject(err)});
+            }).catch(function(err){ reject(err); });
     });
 };
 
-Database.prototype.getTransactions = function (address) {
-    const self = this;
 
+
+Database.prototype.getTransactions = function (address) {
+    var self = this;
     return new Promise(function (resolve, reject) {
         firebase.database().ref().child('transactions/' + address)
             .once('value')
             .then(function(snapshot){
                 resolve(snapshot);
-            }).catch(function (err) {reject(err);})
+            }).catch(function (err) { reject(err); });
     });
 };
 
-Database.prototype.TransactionConfirmed = function(participantRefs){
-    const self = this;
+
+Database.prototype.getTransactionData = function (address, hash) {
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        firebase.database().ref().child('transactions/' + address.toLowerCase() + '/' + hash)
+            .once('value')
+            .then(function(snapshot){
+                resolve(snapshot);
+            }).catch(function (err) { reject(err); });
+    });
+};
+
+
+
+Database.prototype.transactionExists = function(ref){
+    var self = this;
     return new Promise(function (resolve, reject){
-        firebase.database().ref().child(participantRefs[0])
+        firebase.database().ref().child(ref)
                 .once('value')
                 .then(function(snapshot){
-                    if( !snapshot.exists() ){
-                        resolve(true);
-                    }
-                    else{ reject(false) }
-                })
-    })
+                    resolve(snapshot.exists());
+                });
+    });
 };
 
 

@@ -2,6 +2,7 @@
  * Created by jessdotjs on 10/07/17.
  */
 
+"use strict";
 
 /*
  * Server Related
@@ -37,7 +38,7 @@ app.use(cors());
 * */
 
 
-const ETH_NODE = "http://162.243.56.234:8000"; //NODE URL
+var ETH_NODE = "http://162.243.56.234:8000"; //NODE URL
 var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
 
 var port = process.env.PORT || 8080;        // set our port
@@ -47,9 +48,9 @@ var port = process.env.PORT || 8080;        // set our port
 var router = express.Router();              // get an instance of the express Router
 
 
-const database = new Database();
-const wallet = new Wallet(web3);
-const transactionListener = new TransactionListener(web3);
+var database = new Database();
+var wallet = new Wallet(web3);
+var transactionListener = new TransactionListener(web3);
 
 
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
@@ -100,7 +101,7 @@ router.route('/decryptWithFile').post(function(req, res) {
  * */
 
 router.route('/decryptWithPrivateKey').post(function(req, res) {
-    const privateKey = req.query.privateKey;
+    var privateKey = req.query.privateKey;
     if(privateKey) {
         var decrypt = wallet.decryptWithPrivateKey(privateKey);
         if (decrypt.then !== undefined) {
@@ -117,6 +118,29 @@ router.route('/decryptWithPrivateKey').post(function(req, res) {
 
 
 
+/*
+ * Transfer Funds
+ * Params - address: string
+ * */
+
+router.route('/send').post(function(req, res) {
+    var from = req.query.from;
+    var to = req.query.to;
+    var amount = req.query.amount;
+    var description = req.query.description;
+    var gasLimit = req.query.gasLimit;
+    var privateKey = req.query.privateKey;
+    if(from && to && amount && privateKey) {
+        wallet.sendTransaction(from, to, amount, description, gasLimit, privateKey)
+            .then(function (response) {
+                res.send(response);
+            })
+            .catch(function (err) { res.send(false); });
+    }else {
+        res.send(false);
+    }
+});
+
 
 
 /*
@@ -125,27 +149,33 @@ router.route('/decryptWithPrivateKey').post(function(req, res) {
  * */
 
 router.route('/getAddressData').post(function(req, res) {
-    const address = req.query.address;
+    var address = req.query.address;
     if(address) {
         wallet.getAddressData(address)
             .then(function (addressData) {
-                res.send(addressData)
+                res.send(addressData);
             })
-            .catch(function (err) { res.send(false) })
+            .catch(function (err) { res.send(false); });
     }else {
         res.send(false);
     }
 });
 
 
+/*
+ * Get Estimated Fee
+ * Params - address: string, amount: number
+ * */
+
 router.route('/getEstimatedFee').post(function(req,res){
     var address = req.query.address;
     var amount = req.query.amount;
     if(address && amount){
-        var EstimateFee = wallet.estimateFee(address,amount);
-        res.send({estimateFee:EstimateFee});
+        res.send({estimateFee: wallet.estimateFee(address,amount)});
+    }else {
+        res.send(false);
     }
-})
+});
 
 
 
@@ -165,7 +195,6 @@ database.init()
             // Start the server
             app.listen(port);
             console.log('Server Initialized on Port: ' + port);
-
         }else {
             return false;
         }
