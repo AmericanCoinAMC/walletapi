@@ -52,6 +52,11 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blo
     var fanoutObj = {};
 
     return new Promise(function (resolve, reject){
+
+        /*
+        * Retrieve the TX the data so you don't
+        * lose description & txTS during the fanoutobject processor
+        * */
         self.db.getTransactionData(from, hash)
             .then(function (snapshot) {
                 fanoutObj[participantRefs[0]] = // Sender
