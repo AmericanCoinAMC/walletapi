@@ -56,6 +56,9 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blo
         /*
         * Retrieve the TX the data so you don't
         * lose description & txTS during the fanoutobject processor
+        *
+        * @TODO
+        * Add fee property to transaction object
         * */
         self.db.getTransactionData(from, hash)
             .then(function (snapshot) {
