@@ -235,7 +235,7 @@ Wallet.prototype.sendTransaction = function(fromAddress, toAddress, amount, desc
             self.web3.eth.sendRawTransaction(serializedTx, function(err, hash) {
                 if(!err){
                     // Save unconfirmed transaction
-                    self.handleTransaction(fromAddress, toAddress, amount, description, false, hash, -1, false)
+                    self.handleTransaction(fromAddress, toAddress, amount, description, new Date().getTime(), hash, -1, false)
                         .then(function() {
                             resolve(true);
                         })
