@@ -38,7 +38,7 @@ app.use(cors());
 * */
 
 
-var ETH_NODE = "http://162.243.56.234:8000"; //NODE URL
+var ETH_NODE = "https://api.myetherapi.com/rop"; //NODE URL
 var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
 
 var port = process.env.PORT || 8080;        // set our port
@@ -209,7 +209,7 @@ database.init()
 
             // Start the server
             app.listen(port);
-            console.log('Server Initialized on Port: ' + port);
+
         }else {
             return false;
         }

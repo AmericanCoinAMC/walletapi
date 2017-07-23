@@ -47,7 +47,7 @@ Schema.prototype.refresh = function(addressData, generalData) {
     };
 };
 
-Schema.prototype.transaction = function(type, from, to, amount, description, txTS, blockNumber, status) {
+Schema.prototype.transaction = function(type, from, to, amount, description, txTS, hash, blockNumber, status) {
     var currentTS = new Date().getTime();
     var negativeTS = -(currentTS);
     return {
@@ -57,6 +57,7 @@ Schema.prototype.transaction = function(type, from, to, amount, description, txT
         amount: amount,
         description: description || null,
         txTS: txTS || currentTS,
+        transactionHash:hash,
         blockNumber: blockNumber,
         status: status,
         '.priority': -(txTS) || negativeTS

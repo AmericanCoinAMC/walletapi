@@ -63,10 +63,10 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blo
         self.db.getTransactionData(from, hash)
             .then(function (snapshot) {
                 fanoutObj[participantRefs[0]] = // Sender
-                    this.schema.transaction('sent', from, to, amount, snapshot.val().description,  snapshot.val().txTS, hash, blockNumber, status);
+                    self.schema.transaction('sent', from, to, self.formatAmount(amount), snapshot.val().description,  snapshot.val().txTS, hash, blockNumber, status);
 
                 fanoutObj[participantRefs[1]] = // Receiver
-                    this.schema.transaction('received', from, to, amount, snapshot.val().description, snapshot.val().txTS, hash, blockNumber, status);
+                    self.schema.transaction('received', from, to, self.formatAmount(amount), snapshot.val().description, snapshot.val().txTS, hash, blockNumber, status);
 
                 self.db.processFanoutObject(fanoutObj)
                     .then(function(response){
