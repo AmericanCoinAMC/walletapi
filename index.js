@@ -85,7 +85,7 @@ router.route('/decryptWithFile').post(function(req, res) {
         if (decrypt.then !== undefined) {
             decrypt.then(function (walletData) {
                 res.send(walletData);
-            }).catch(function (err) { res.send(err) });
+            }).catch(function (err) { res.send(err); });
         }else {
             res.send(false);
         }
@@ -107,7 +107,7 @@ router.route('/decryptWithPrivateKey').post(function(req, res) {
         if (decrypt.then !== undefined) {
             decrypt.then(function (walletData) {
                 res.send(walletData);
-            }).catch(function (err) { res.send(err) });
+            }).catch(function (err) { res.send(err); });
         }else {
             res.send(false);
         }
@@ -120,7 +120,6 @@ router.route('/decryptWithPrivateKey').post(function(req, res) {
 
 /*
  * Transfer Funds
- * Params - address: string
  * */
 
 router.route('/send').post(function(req, res) {
@@ -172,6 +171,22 @@ router.route('/getEstimatedFee').post(function(req,res){
     var amount = req.query.amount;
     if(address && amount){
         res.send({estimateFee: wallet.estimateFee(address,amount)});
+    }else {
+        res.send(false);
+    }
+});
+
+
+
+/*
+ * validAddress
+ * Params - address: string
+ * */
+
+router.route('/getEstimatedFee').post(function(req,res){
+    var address = req.query.address;
+    if(address){
+        res.send({valid: wallet.isValidAddress(address)});
     }else {
         res.send(false);
     }

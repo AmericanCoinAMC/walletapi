@@ -312,6 +312,10 @@ Wallet.prototype.cleanPrefix = function(key) {
     }
 };
 
+Wallet.prototype.isValidAddress = function(address) {
+    return this.web3.isAddress(address);
+};
+
 
 Wallet.prototype.formatAmount = function(amount){
     return amount * Math.pow(10, 8);
