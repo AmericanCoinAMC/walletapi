@@ -38,7 +38,7 @@ app.use(cors());
 * */
 
 
-var ETH_NODE = "https://api.myetherapi.com/rop"; //NODE URL
+var ETH_NODE = "http://192.168.1.110:8081/"; //NODE URL
 var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
 
 var port = process.env.PORT || 8080;        // set our port
@@ -183,7 +183,7 @@ router.route('/getEstimatedFee').post(function(req,res){
  * Params - address: string
  * */
 
-router.route('/getEstimatedFee').post(function(req,res){
+router.route('/validAddress').post(function(req,res){
     var address = req.query.address;
     if(address){
         res.send({valid: wallet.isValidAddress(address)});
@@ -209,8 +209,9 @@ database.init()
 
             // Start the server
             app.listen(port);
+            console.log('Server Initialized on Port: ' + port);
 
-        }else {
+         }else {
             return false;
         }
     })

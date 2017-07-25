@@ -163,15 +163,15 @@ Wallet.prototype.getGasPrice = function () {
 * */
 
 Wallet.prototype.autorefillActive = function () {
-    return true; // To be completed
+    return this.myContractInstance.autorefill(); // To be completed
 };
 
 Wallet.prototype.buyPrice = function () {
-    return 10; // To be completed
+    return this.myContractInstance.buyPrice().toNumber(); // To be completed
 };
 
 Wallet.prototype.sellPrice = function () {
-    return 15; // To be completed
+    return this.myContractInstance.sellPrice().toNumber(); // To be completed
 };
 
 
@@ -271,10 +271,10 @@ Wallet.prototype.handleTransaction = function(from, to, amount, description, txT
     var fanoutObj = {};
 
     fanoutObj[participantRefs[0]] = // Sender
-        this.schema.transaction('sent', from, to, amount, description, txTS, hash, blockNumber, status);
+        this.schema.transaction('sent', from, to, amount, description, txTS, hash, blockNumber, status, null);
 
     fanoutObj[participantRefs[1]] = // Receiver
-        this.schema.transaction('received', from, to, amount, description, txTS, hash, blockNumber, status);
+        this.schema.transaction('received', from, to, amount, description, txTS, hash, blockNumber, status, null);
 
     return new Promise(function (resolve, reject){
         self.db.transactionExists(participantRefs[0])

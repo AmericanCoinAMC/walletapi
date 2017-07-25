@@ -8,6 +8,7 @@ var ABI = require("./Contract").abi;
 var contractAddress = require("./Contract").address; //Modify
 var Database = require('./Database');
 var Schema = require('./Schema');
+var Wallet = require('./Wallet');
 
 function TransactionListener(web3Node) {
     var err;
@@ -31,7 +32,8 @@ TransactionListener.prototype.listenToEvent = function(){
     var self = this;
     this.event.watch(function(error, result){
         if (!error){
-            self.handleEvent(result.args.from, result.args.to, result.args.value.toNumber(), result.transactionHash, result.blockNumber, true);
+            console.log(result.args.t_type);
+            self.handleEvent(result.args.from, result.args.to, result.args.value.toNumber(), result.transactionHash, result.blockNumber, true, result.args.t_type);
        }
      });        
 };
@@ -43,13 +45,18 @@ TransactionListener.prototype.formatAmount = function(amount){
 
 
 
-TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blockNumber, status) {
+TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blockNumber, status,autorefill) {
     var self = this;
     var participantRefs = [
         'transactions/' + from.toLowerCase() + '/' + hash, // sender
         'transactions/' + to.toLowerCase() + '/' + hash // receiver
     ];
     var fanoutObj = {};
+    var autorefillObj = {};
+    if (autorefill) {
+        autorefillObj["autorefill"] = true;
+        autorefillObj[""]
+    }
 
     return new Promise(function (resolve, reject){
 
@@ -63,10 +70,10 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blo
         self.db.getTransactionData(from, hash)
             .then(function (snapshot) {
                 fanoutObj[participantRefs[0]] = // Sender
-                    self.schema.transaction('sent', from, to, self.formatAmount(amount), snapshot.val().description,  snapshot.val().txTS, hash, blockNumber, status);
+                    self.schema.transaction('sent', from, to, self.formatAmount(amount), snapshot.val().description,  snapshot.val().txTS, hash, blockNumber, status, autorefill);
 
                 fanoutObj[participantRefs[1]] = // Receiver
-                    self.schema.transaction('received', from, to, self.formatAmount(amount), snapshot.val().description, snapshot.val().txTS, hash, blockNumber, status);
+                    self.schema.transaction('received', from, to, self.formatAmount(amount), snapshot.val().description, snapshot.val().txTS, hash, blockNumber, status, autorefill);
 
                 self.db.processFanoutObject(fanoutObj)
                     .then(function(response){

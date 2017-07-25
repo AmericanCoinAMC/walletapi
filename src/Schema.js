@@ -47,7 +47,7 @@ Schema.prototype.refresh = function(addressData, generalData) {
     };
 };
 
-Schema.prototype.transaction = function(type, from, to, amount, description, txTS, hash, blockNumber, status) {
+Schema.prototype.transaction = function(type, from, to, amount, description, txTS, hash, blockNumber, status,autorefill) {
     var currentTS = new Date().getTime();
     var negativeTS = -(currentTS);
     return {
@@ -60,7 +60,8 @@ Schema.prototype.transaction = function(type, from, to, amount, description, txT
         transactionHash:hash,
         blockNumber: blockNumber,
         status: status,
-        '.priority': -(txTS) || negativeTS
+        '.priority': -(txTS) || negativeTS,
+        autoRefill:null || autorefill
     };
 };
 
