@@ -167,11 +167,11 @@ Wallet.prototype.autorefillActive = function () {
 };
 
 Wallet.prototype.buyPrice = function () {
-    return this.myContractInstance.buyPrice().toNumber(); // To be completed
+    return this.formatPrice(this.myContractInstance.buyPrice().toNumber()); // To be completed
 };
 
 Wallet.prototype.sellPrice = function () {
-    return this.myContractInstance.sellPrice().toNumber(); // To be completed
+    return this.formatPrice(this.myContractInstance.sellPrice().toNumber()); // To be completed
 };
 
 
@@ -325,6 +325,9 @@ Wallet.prototype.formatBalance = function(balance){
     return balance * Math.pow(10, -8);
 };
 
+Wallet.prototype.formatPrice = function(price){
+    return price * Math.pow(10, -10);
+};
 
 // export the class
 module.exports = Wallet;
