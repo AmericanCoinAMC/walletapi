@@ -210,8 +210,6 @@ database.init()
             // Start the server
             app.listen(port);
             console.log('Server Initialized on Port: ' + port);
-  var privateKey = new Buffer('25c5aed1ffaf6572c6ead5f61164a798a63145b380acff0e8644f9f74c691e52', 'hex');
- wallet.sendTransaction("0x4AD40c0660f467C94cfA314Bae24c15DAeBd02EB","0xF77E9a8906Dd09FECD356A5405A871ba1262a865",0.5,"B",500000,privateKey);
 
          }else {
             return false;
