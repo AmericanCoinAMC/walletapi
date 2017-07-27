@@ -204,6 +204,7 @@ Wallet.prototype.formatTransactions = function (transactionsSnapshot) {
             txTS: snapshot.val().txTS,
             blockNumber: snapshot.val().blockNumber,
             status: snapshot.val().status,
+            autoRefill: snapshot.val().autoRefill,
             $priority: snapshot.getPriority()
         });
     });

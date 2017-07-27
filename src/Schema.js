@@ -60,8 +60,8 @@ Schema.prototype.transaction = function(type, from, to, amount, description, txT
         transactionHash:hash,
         blockNumber: blockNumber,
         status: status,
-        '.priority': -(txTS) || negativeTS,
-        autoRefill:null || autorefillObj
+        autoRefill:autorefillObj || null,
+        '.priority': -(txTS) || negativeTS
     };
 };
 

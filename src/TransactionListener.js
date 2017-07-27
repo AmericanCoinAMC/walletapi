@@ -53,7 +53,7 @@ TransactionListener.prototype.formatAmount = function(amount){
 
 
 
-TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blockNumber, status,autorefill,etherReceived) {
+TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blockNumber, status, autorefill, etherReceived) {
     var self = this;
     var participantRefs = [
         'transactions/' + from.toLowerCase() + '/' + hash, // sender
@@ -65,13 +65,13 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blo
     return new Promise(function (resolve, reject){
 
          if (autorefill) {
-            autorefillObj["autorefill"] = true;
-            autorefillObj["amcSent"] = self.formatAmount(amount);
-            autorefillObj["etherReceived"] = self.web3.fromWei(etherReceived,"ether");
+            autorefillObj.autorefill = true;
+            autorefillObj.amcSent = self.formatAmount(amount);
+            autorefillObj.etherReceived = self.web3.fromWei(etherReceived, "ether");
 
         }
         else{
-            autorefillObj["autorefill"] = false;
+            autorefillObj.autorefill = false;
         }
         /*
         * Retrieve the TX the data so you don't
@@ -84,14 +84,14 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blo
             .then(function (snapshot) {
                 var _description;
                 var _txTS;
-                if (!snapshot.exists()) {
+                if (snapshot.exists()) {
+                    _description = snapshot.val().description;
+                    _txTS =  snapshot.val().txTS;
+                } else {
                     _description = null;
                     _txTS = null;
                 }
-                else {
-                    _description = snapshot.val().description;
-                    _txTS =  snapshot.val().txTS;
-                }
+
                 fanoutObj[participantRefs[0]] = // Sender
                     self.schema.transaction('sent', from, to, self.formatAmount(amount), _description,  _txTS, hash, blockNumber, status, autorefillObj);
 
