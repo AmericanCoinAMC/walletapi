@@ -272,10 +272,10 @@ Wallet.prototype.handleTransaction = function(from, to, amount, description, txT
     var fanoutObj = {};
 
     fanoutObj[participantRefs[0]] = // Sender
-        this.schema.transaction('sent', from, to, amount, description, txTS, hash, blockNumber, status, null);
+        this.schema.transaction('sent', from, to, amount, description, txTS, hash, blockNumber, status, null,null);
 
     fanoutObj[participantRefs[1]] = // Receiver
-        this.schema.transaction('received', from, to, amount, description, txTS, hash, blockNumber, status, null);
+        this.schema.transaction('received', from, to, amount, description, txTS, hash, blockNumber, status, null,null);
 
     return new Promise(function (resolve, reject){
         self.db.transactionExists(participantRefs[0])

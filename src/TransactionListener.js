@@ -32,6 +32,7 @@ TransactionListener.prototype.listenToEvent = function(){
     var self = this;
     this.event.watch(function(error, result){      
         if (!error){
+            var fee=( self.web3.eth.getTransaction(result.transactionHash).gasPrice.toNumber() )* (self.web3.eth.getTransactionReceipt(result.transactionHash).gasUsed);
             self.handleEvent(
                 result.args.from,
                 result.args.to, 
@@ -40,7 +41,9 @@ TransactionListener.prototype.listenToEvent = function(){
                 result.blockNumber,
                 true,
                 result.args.AutoRefill, 
-                result.args.Ethervalue.toNumber() 
+                result.args.Ethervalue.toNumber(),
+                self.web3.fromWei(fee, "ether")
+
             );
        }
      });        
@@ -53,7 +56,7 @@ TransactionListener.prototype.formatAmount = function(amount){
 
 
 
-TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blockNumber, status, autorefill, etherReceived) {
+TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blockNumber, status, autorefill, etherReceived,feePaid) {
     var self = this;
     var participantRefs = [
         'transactions/' + from.toLowerCase() + '/' + hash, // sender
@@ -93,10 +96,10 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blo
                 }
 
                 fanoutObj[participantRefs[0]] = // Sender
-                    self.schema.transaction('sent', from, to, self.formatAmount(amount), _description,  _txTS, hash, blockNumber, status, autorefillObj);
+                    self.schema.transaction('sent', from, to, self.formatAmount(amount), _description,  _txTS, hash, blockNumber, status, autorefillObj,feePaid);
 
                 fanoutObj[participantRefs[1]] = // Receiver
-                    self.schema.transaction('received', from, to, self.formatAmount(amount), _description, _txTS, hash, blockNumber, status, null);
+                    self.schema.transaction('received', from, to, self.formatAmount(amount), _description, _txTS, hash, blockNumber, status, null,null);
 
                 self.db.processFanoutObject(fanoutObj)
                     .then(function(response){
