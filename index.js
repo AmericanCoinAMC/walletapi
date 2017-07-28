@@ -38,7 +38,7 @@ app.use(cors());
 * */
 
 
-var ETH_NODE = "http://192.168.1.110:8081/"; //NODE URL
+var ETH_NODE = "http://localhost:8081/"; //NODE URL
 var web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE));
 
 var port = process.env.PORT || 8080;        // set our port
