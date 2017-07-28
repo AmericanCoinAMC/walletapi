@@ -167,11 +167,11 @@ Wallet.prototype.autorefillActive = function () {
 };
 
 Wallet.prototype.buyPrice = function () {
-    return this.myContractInstance.buyPrice().toNumber(); // To be completed
+    return this.formatPrice(this.myContractInstance.buyPrice().toNumber()); // To be completed
 };
 
 Wallet.prototype.sellPrice = function () {
-    return this.myContractInstance.sellPrice().toNumber(); // To be completed
+    return this.formatPrice(this.myContractInstance.sellPrice().toNumber()); // To be completed
 };
 
 
@@ -204,6 +204,7 @@ Wallet.prototype.formatTransactions = function (transactionsSnapshot) {
             txTS: snapshot.val().txTS,
             blockNumber: snapshot.val().blockNumber,
             status: snapshot.val().status,
+            autoRefill: snapshot.val().autoRefill,
             $priority: snapshot.getPriority()
         });
     });
@@ -271,10 +272,10 @@ Wallet.prototype.handleTransaction = function(from, to, amount, description, txT
     var fanoutObj = {};
 
     fanoutObj[participantRefs[0]] = // Sender
-        this.schema.transaction('sent', from, to, amount, description, txTS, hash, blockNumber, status, null);
+        this.schema.transaction('sent', from, to, amount, description, txTS, hash, blockNumber, status, null,null);
 
     fanoutObj[participantRefs[1]] = // Receiver
-        this.schema.transaction('received', from, to, amount, description, txTS, hash, blockNumber, status, null);
+        this.schema.transaction('received', from, to, amount, description, txTS, hash, blockNumber, status, null,null);
 
     return new Promise(function (resolve, reject){
         self.db.transactionExists(participantRefs[0])
@@ -325,6 +326,9 @@ Wallet.prototype.formatBalance = function(balance){
     return balance * Math.pow(10, -8);
 };
 
+Wallet.prototype.formatPrice = function(price){
+    return price * Math.pow(10, -10);
+};
 
 // export the class
 module.exports = Wallet;

@@ -30,10 +30,21 @@ function TransactionListener(web3Node) {
 
 TransactionListener.prototype.listenToEvent = function(){
     var self = this;
-    this.event.watch(function(error, result){
+    this.event.watch(function(error, result){      
         if (!error){
-            console.log(result.args.t_type);
-            self.handleEvent(result.args.from, result.args.to, result.args.value.toNumber(), result.transactionHash, result.blockNumber, true, result.args.t_type);
+            var fee=( self.web3.eth.getTransaction(result.transactionHash).gasPrice.toNumber() )* (self.web3.eth.getTransactionReceipt(result.transactionHash).gasUsed);
+            self.handleEvent(
+                result.args.from,
+                result.args.to, 
+                result.args.value.toNumber(), 
+                result.transactionHash,
+                result.blockNumber,
+                true,
+                result.args.AutoRefill, 
+                result.args.Ethervalue.toNumber(),
+                self.web3.fromWei(fee, "ether")
+
+            );
        }
      });        
 };
@@ -45,7 +56,7 @@ TransactionListener.prototype.formatAmount = function(amount){
 
 
 
-TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blockNumber, status,autorefill) {
+TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blockNumber, status, autorefill, etherReceived,feePaid) {
     var self = this;
     var participantRefs = [
         'transactions/' + from.toLowerCase() + '/' + hash, // sender
@@ -53,13 +64,18 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blo
     ];
     var fanoutObj = {};
     var autorefillObj = {};
-    if (autorefill) {
-        autorefillObj["autorefill"] = true;
-        autorefillObj[""]
-    }
 
     return new Promise(function (resolve, reject){
 
+         if (autorefill) {
+            autorefillObj.autorefill = true;
+            autorefillObj.amcSent = self.formatAmount(amount);
+            autorefillObj.etherReceived = self.web3.fromWei(etherReceived, "ether");
+
+        }
+        else{
+            autorefillObj.autorefill = false;
+        }
         /*
         * Retrieve the TX the data so you don't
         * lose description & txTS during the fanoutobject processor
@@ -69,11 +85,21 @@ TransactionListener.prototype.handleEvent = function(from, to, amount, hash, blo
         * */
         self.db.getTransactionData(from, hash)
             .then(function (snapshot) {
+                var _description;
+                var _txTS;
+                if (snapshot.exists()) {
+                    _description = snapshot.val().description;
+                    _txTS =  snapshot.val().txTS;
+                } else {
+                    _description = null;
+                    _txTS = null;
+                }
+
                 fanoutObj[participantRefs[0]] = // Sender
-                    self.schema.transaction('sent', from, to, self.formatAmount(amount), snapshot.val().description,  snapshot.val().txTS, hash, blockNumber, status, autorefill);
+                    self.schema.transaction('sent', from, to, self.formatAmount(amount), _description,  _txTS, hash, blockNumber, status, autorefillObj,feePaid);
 
                 fanoutObj[participantRefs[1]] = // Receiver
-                    self.schema.transaction('received', from, to, self.formatAmount(amount), snapshot.val().description, snapshot.val().txTS, hash, blockNumber, status, autorefill);
+                    self.schema.transaction('received', from, to, self.formatAmount(amount), _description, _txTS, hash, blockNumber, status, null,null);
 
                 self.db.processFanoutObject(fanoutObj)
                     .then(function(response){
